@@ -24,6 +24,8 @@
                         success: function (msg) {
                             if (msg === "0") {
                                 alert("图形口令重置成功！已向您的邮箱发送了一封确认邮件，请登录邮箱查收并按照邮件提示操作。");
+                                $("#username").val("");
+                                $("#password").val("");
                             } else if (msg === "1") {
                                 alert("很抱歉，服务器异常");
                             } else if (msg === "2") {
