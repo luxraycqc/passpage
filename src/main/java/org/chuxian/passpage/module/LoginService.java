@@ -186,29 +186,18 @@ public class LoginService {
         }
     }
 
-    public void quit(String domain, String usernameHash) {
-        UserLoginState userLoginState = userLoginStates.get(domain + usernameHash);
+    public void quit(String domain, String username) {
+        UserLoginState userLoginState = userLoginStates.get(domain + username);
         if (userLoginState != null) {
-            log.info("usernameHash=" + usernameHash + "请求了图片后没有登录便关闭了" + domain + "的登录页面");
+            log.info("username=" + username + "请求了图片后没有登录便关闭了" + domain + "的登录页面");
             userLoginState.setQuitFlag(1);
         }
     }
-
-
-
+    
     public void deleteOldPages(String username, String domain) {
         try {
             long thresholdTime = System.currentTimeMillis() / 1000 - 864000;
             Connection connection = dataSource.getConnection();
-//            List<Entity> oldImageEntities = SqlUtil.query(connection, "select * from user_page where domain = ? and username = ? and unix_timestamp(added_time) < ?", domain, thresholdTime);
-//            String[] loginModes = new String[]{"/displayRaw", "/displayHead"};
-//            for (Entity oldImageEntity : oldImageEntities) {
-//                String fileName = oldImageEntity.getStr("file_name");
-//                for (String loginMode : loginModes) {
-//                    File filePath = new File(config.getPageLibraryPath() + domain + loginMode + "/" + fileName);
-//                    filePath.delete();
-//                }
-//            }
             int count = SqlUtil.execute(connection, "update user_page set deleted = 1 where domain = ? and username = ? and unix_timestamp(added_time) < ?", domain, thresholdTime);
             log.info("删除username=" + username + "的10天前的日志" + count + "个");
             DbUtil.close(connection);
