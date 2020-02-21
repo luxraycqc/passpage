@@ -71,29 +71,29 @@ public class LoginService {
             HashSet<String> allRealTitles = new HashSet<>();
             Connection connection = dataSource.getConnection();
             if (signupService.checkUsername(domain, username) == 1) {
-                List<Entity> realUriEntities = SqlUtil.query(connection, "SELECT * FROM user_page WHERE username=? AND domain=? and deleted=0 ORDER BY RAND()", username, domain);
-                if (realUriEntities.size() == 0) {
+                List<Entity> realPageEntities = SqlUtil.query(connection, "SELECT * FROM user_page WHERE username=? AND domain=? and deleted=0 ORDER BY RAND()", username, domain);
+                if (realPageEntities.size() == 0) {
                     log.warn("没有真实网页！");
                     DbUtil.close(connection);
                     userLoginState.realFileNames.add("default.html");
                     return new String[]{"default.html"};
                 }
                 int limit = 3;
-                if (realUriEntities.size() < 6) limit = 2;
-                if (realUriEntities.size() < 3) limit = 1;
+                if (realPageEntities.size() < 6) limit = 2;
+                if (realPageEntities.size() < 3) limit = 1;
                 log.info("username为" + username + "请求网站" + domain + "的网页，给" + limit + "个真的");
                 int i = 0;
                 Date earliestTime = new Date();
                 Date latestTime = new Date(0);
-                for (Entity realUriEntity : realUriEntities) {
-                    allRealTitles.add(realUriEntity.getStr("title"));
+                for (Entity realPageEntity : realPageEntities) {
+                    allRealTitles.add(realPageEntity.getStr("title"));
                     if (i < limit) {
-                        Date addedTime = realUriEntity.getDate("added_time");
+                        Date addedTime = realPageEntity.getDate("added_time");
                         if (addedTime != null) {
                             if (addedTime.getTime() < earliestTime.getTime()) earliestTime = addedTime;
                             if (addedTime.getTime() > latestTime.getTime()) latestTime = addedTime;
                         }
-                        userLoginState.realFileNames.add("page/" + domain + "/" + loginMode + "/" + realUriEntity.getStr("file_name"));
+                        userLoginState.realFileNames.add("page/" + domain + "/" + loginMode + "/" + realPageEntity.getStr("file_name"));
                         i++;
                     }
                 }
@@ -103,14 +103,14 @@ public class LoginService {
                 }
                 log.info("real:" + userLoginState.realFileNames);
                 int decoyLimit = 8 + allRealTitles.size();
-                Entity decoyUrisCountEntity = SqlUtil.queryOne(connection, "SELECT count(1) FROM decoy_page WHERE domain = ? and unix_timestamp(added_time) <= ? and unix_timestamp(added_time) >= ?", domain, latestTime.getTime() / 1000 + 86400, earliestTime.getTime() / 1000 - 86400);
-                long decoyUriCount = decoyUrisCountEntity.getLong("count(1)");
+                Entity decoyPageCountEntity = SqlUtil.queryOne(connection, "SELECT count(1) FROM decoy_page WHERE domain = ? and unix_timestamp(added_time) <= ? and unix_timestamp(added_time) >= ?", domain, latestTime.getTime() / 1000 + 86400, earliestTime.getTime() / 1000 - 86400);
+                long decoyPageCount = decoyPageCountEntity.getLong("count(1)");
                 double randThreshold = 1;
-                if (decoyUriCount > 0) randThreshold = (double)decoyLimit / decoyUriCount * 3;
-                List<Entity> decoyUriEntities = SqlUtil.query(connection, "SELECT file_name, title FROM decoy_page WHERE domain = ? and rand() < ? and unix_timestamp(added_time) <= ? and unix_timestamp(added_time) >= ? limit " + decoyLimit, domain, randThreshold, latestTime.getTime() / 1000 + 86400, earliestTime.getTime() / 1000 - 86400);
-                for (Entity decoyUriEntity : decoyUriEntities) {
-                    if (i < 9 && !allRealTitles.contains(decoyUriEntity.getStr("title"))) {
-                        userLoginState.decoyFileNames.add("page/" + domain + "/" + loginMode + "/" + decoyUriEntity.getStr("file_name"));
+                if (decoyPageCount > 0) randThreshold = (double)decoyLimit / decoyPageCount * 3;
+                List<Entity> decoyPageEntities = SqlUtil.query(connection, "SELECT file_name, title FROM decoy_page WHERE domain = ? and rand() < ? and unix_timestamp(added_time) <= ? and unix_timestamp(added_time) >= ? limit " + decoyLimit, domain, randThreshold, latestTime.getTime() / 1000 + 86400, earliestTime.getTime() / 1000 - 86400);
+                for (Entity decoyPageEntity : decoyPageEntities) {
+                    if (i < 9 && !allRealTitles.contains(decoyPageEntity.getStr("title"))) {
+                        userLoginState.decoyFileNames.add("page/" + domain + "/" + loginMode + "/" + decoyPageEntity.getStr("file_name"));
                         i++;
                     }
                 }
