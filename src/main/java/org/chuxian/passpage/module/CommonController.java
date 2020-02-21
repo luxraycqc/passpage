@@ -17,16 +17,6 @@ public class CommonController {
     DataSource dataSource;
     @Autowired
     SignupService signupService;
-    @Autowired
-    LogService logService;
-    @Autowired
-    DecoyPageService decoyPageService;
-    @Autowired
-    HtmlTransformService htmlTransformService;
-    @Autowired
-    AsyncUploadService asyncUploadService;
-    @Autowired
-    ResetService resetService;
 
     Log log = LogFactory.get();
 

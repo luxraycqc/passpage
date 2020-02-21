@@ -68,7 +68,9 @@ public class LoginController {
     public String login(@RequestBody LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         String domain = loginRequest.getDomain();
-        return loginService.login(username, domain, loginRequest.getLoginMode(), loginRequest.getChosenPageUris());
+        String loginMode = loginRequest.getLoginMode();
+        String[] chosenPageUris = loginRequest.getChosenPageUris();
+        return loginService.login(username, domain, loginMode, chosenPageUris);
     }
 
     @RequestMapping(value="/quit/{domain}/{username}", method = RequestMethod.GET)

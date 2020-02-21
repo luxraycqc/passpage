@@ -10,12 +10,10 @@
     <script>
         let mixedPageUris = new Array(9);
         let pageUriMap = new Array(9);
-        let lastTimestamp;
-        let passwordUsedTime = null;
         function changePage() {
             let username = $("#username").val();
             if (username.length > 0) {
-                let changePageRequest = username + "-www.sohu.com-displayHead-" + passwordUsedTime;
+                let changePageRequest = username + "-www.sohu.com-displayHead";
                 $.get("https://www.passpage.xyz:8443/pageUris/" + changePageRequest, function (msg) {
                     if (msg[0].length > 1) {
                         $("#a").css("height", "120");
@@ -25,7 +23,6 @@
                         $("#next_step").css("display", "none");
                         $("#change").css("display", "inline");
                         $("#login").css("display", "inline");
-                        lastTimestamp = (new Date()).getTime();
                         $(".small_img").css("border", "2px solid white");
                         $(".small_img").css("visibility", "visible");
                         $(".small_page").css("visibility", "visible");
@@ -55,7 +52,6 @@
         }
 
         $(document).ready(function () {
-            lastTimestamp = (new Date()).getTime();
             $("#a1-1").css("display", "none");
             $("#return").css("display", "none");
             $("#change").css("display", "none");
@@ -63,9 +59,6 @@
             $(".small_img").attr("width", document.documentElement.clientWidth / 3 - 20);
             $(".small_page").attr("width", document.documentElement.clientWidth / 3 - 20);
             $("#next_step").click(function () {
-                if (passwordUsedTime === null) {
-                    passwordUsedTime = (new Date()).getTime() - lastTimestamp;
-                }
                 let username = $("#username").val();
                 if (username.length > 0) {
                     let password = $("#password").val();
@@ -126,7 +119,6 @@
                 }
             });
             $("#login").click(function () {
-                let usedTime = (new Date()).getTime() - lastTimestamp + passwordUsedTime;
                 let chosenPageUris = [];
                 let j = 0;
                 for (let i = 0; i < 9; i++) {
@@ -151,6 +143,10 @@
                         success: function (msg) {
                             if (msg.length > 1) {
                                 window.location.href = msg;
+                            } else if (msg === "2" || msg === "5") {
+                                alert("图形口令错误，请重新选择或点击“切换”后重新选择");
+                            } else if (msg === "3") {
+                                alert("请刷新本页面后重试");
                             } else if (msg === "4") {
                                 alert("登录次数超限，请重置口令");
                                 window.location.href = "reset-user-images-sohu.html";
