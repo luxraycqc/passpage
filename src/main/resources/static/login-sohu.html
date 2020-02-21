@@ -147,8 +147,8 @@
                         type: "POST",
                         url: "https://www.passpage.xyz:8443/login",
                         data: JSON.stringify(request),
-                        dataType: "json",
                         contentType: "application/json",
+                        dataType: "text",
                         success: function (msg) {
                             if (msg.length > 1) {
                                 window.location.href = msg;
