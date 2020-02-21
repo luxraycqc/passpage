@@ -52,12 +52,16 @@ public class DecoyPageService {
         try {
             log.info("开始爬取" + domain + "上的所有网页");
             String homepageHtml = HttpUtil.get(domain);
-            List<String> linkUrls = ReUtil.findAll("(" + domain + ".*?)\"", homepageHtml, 1);
+            List<String> linkUrls = ReUtil.findAll("(www.sohu.com/a/.*?)\"", homepageHtml, 1);
             log.info("主页和链接获取成功");
             Connection connection = dataSource.getConnection();
             log.info("数据库连接获取成功");
             for (String linkUrl : linkUrls) {
-                String linkHtml = HttpUtil.get(linkUrl);
+                String linkHtml = HttpRequest.get("https://" + linkUrl)
+                        .setReadTimeout(10000)
+                        .setConnectionTimeout(10000)
+                        .setMaxRedirectCount(2)
+                        .execute().body();
                 String title = ReUtil.get("<h1.*?>(.*?)</h1>", linkHtml, 1);
                 if (title != null) {
                     title = title.replaceAll("<.*?>|\\s{2,}", "");
@@ -103,7 +107,7 @@ public class DecoyPageService {
             Connection connection = dataSource.getConnection();
             log.info("数据库连接获取成功");
             for (String linkUrl : linkUrls) {
-                String linkHtml = HttpRequest.get(domain + linkUrl)
+                String linkHtml = HttpRequest.get("https://" + domain + linkUrl)
                         .cookie(cookie)
                         .setReadTimeout(10000)
                         .setConnectionTimeout(10000)
