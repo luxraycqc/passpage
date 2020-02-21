@@ -193,7 +193,7 @@ public class LoginService {
             userLoginState.setQuitFlag(1);
         }
     }
-    
+
     public void deleteOldPages(String username, String domain) {
         try {
             long thresholdTime = System.currentTimeMillis() / 1000 - 864000;

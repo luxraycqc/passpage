@@ -21,7 +21,7 @@ public class LogService {
     public int uploadHtml(String username, String domain, String fileName, String title, Date addedTime) {
         try {
             Connection connection = dataSource.getConnection();
-            SqlUtil.execute(connection, "INSERT INTO user_page(username,domain,file_name,title,added_time) VALUES(?,?,?,?,?)", username, domain, fileName, title, addedTime);
+            SqlUtil.execute(connection, "INSERT INTO user_page(username,domain,file_name,title,added_time,deleted) VALUES(?,?,?,?,?,?)", username, domain, fileName, title, addedTime, 0);
             DbUtil.close(connection);
             log.info("用户" + username + "增加来自" + domain + "的网页：" + title);
             return 0;
