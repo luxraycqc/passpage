@@ -47,6 +47,15 @@
                             $("#c" + i).attr("src", "");
                             $("#c" + i).attr("srcdoc", "");
                         }
+                    } else if (msg[0] === "2") {
+                        $("#a").css("height", "120");
+                        $("#a1").css("display", "none");
+                        $("#a1-1").css("display", "inline");
+                        $("#return").css("display", "inline");
+                        $("#next_step").css("display", "none");
+                        $("#change").css("display", "inline");
+                        $("#login").css("display", "inline");
+                        $("#a3").css("display", "none");
                     }
                 });
             }
