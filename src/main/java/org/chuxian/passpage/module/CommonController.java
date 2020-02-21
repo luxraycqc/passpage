@@ -97,7 +97,7 @@ public class CommonController {
         }
     }
 
-    @RequestMapping(value="/uploadHtml", method = RequestMethod.POST)
+    @RequestMapping(value="/uploadPageUrl", method = RequestMethod.POST)
     @ResponseBody
     public String uploadPageUrl(@RequestBody UploadPageUrlRequest uploadPageUrlRequest) {
         log.info("收到上传页面URL的信号");
