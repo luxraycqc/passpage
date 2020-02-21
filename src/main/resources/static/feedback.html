@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>实验反馈表</title>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#submit").click(function () {
+                let question1 = document.getElementsByName("question1");
+                let answer1 = "";
+                for (let i = 0; i < question1.length; i++) {
+                    if (question1[i].checked) {
+                        answer1 = question1[i].value;
+                        break;
+                    }
+                }
+                let question2 = document.getElementsByName("question2");
+                let answer2 = "";
+                for (let i = 0; i < question2.length; i++) {
+                    if (question2[i].checked) {
+                        answer2 = question2[i].value;
+                        break;
+                    }
+                }
+                let question3 = document.getElementsByName("question3");
+                let answer3 = "";
+                for (let i = 0; i < question3.length; i++) {
+                    if (question3[i].checked) {
+                        answer3 = question3[i].value;
+                        break;
+                    }
+                }
+                let question4 = document.getElementsByName("question4");
+                let answer4 = "";
+                for (let i = 0; i < question4.length; i++) {
+                    if (question4[i].checked) {
+                        answer4 = question4[i].value;
+                        break;
+                    }
+                }
+                let question5 = document.getElementsByName("question5");
+                let answer5 = "";
+                for (let i = 0; i < question5.length; i++) {
+                    if (question5[i].checked) {
+                        answer5 = question5[i].value;
+                        break;
+                    }
+                }
+                let question6 = document.getElementsByName("question6");
+                let answer6 = "";
+                for (let i = 0; i < question6.length; i++) {
+                    if (question6[i].checked) {
+                        answer6 = question6[i].value;
+                        break;
+                    }
+                }
+                let question7 = document.getElementsByName("question7");
+                let answer7 = "";
+                for (let i = 0; i < question7.length; i++) {
+                    if (question7[i].checked) {
+                        answer7 = question7[i].value;
+                        break;
+                    }
+                }
+                if (answer1.length > 0 && answer2.length > 0 && answer3.length > 0 && answer4.length > 0 && answer5.length > 0 && answer6.length > 0 && answer7.length > 0) {
+                    let formData = new FormData();
+                    formData.append("answer", answer1 + "-" + answer2 + "-" + answer3 + "-" + answer4 + "-" + answer5 + "-" + answer6 + "-" + answer7);
+                    $.ajax({
+                        url: "https://www.passpage.xyz:8443/feedback",
+                        type: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (msg) {
+                            if (msg === 0) {
+                                window.location.href = "thanks.html";
+                            } else {
+                                alert("很抱歉，服务器异常。");
+                            }
+                        }
+                    });
+                } else {
+                    alert("请输入完整的信息。");
+                }
+            });
+        });
+    </script>
+    <style>
+        h1 {
+            text-align: center
+        }
+        label {
+             margin-right: 10px;
+        }
+        #a {
+            margin: 0 auto;
+            padding-left: 5%;
+            padding-right: 5%
+        }
+        #b {
+            margin: 0 auto;
+            padding-left: 5%;
+            padding-right: 5%;
+            text-align: center
+        }
+        #submit {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<h1>实验反馈表</h1>
+<hr>
+<div id="a">
+    <p>
+        1.	我愿意使用这种认证方案。
+        <label><input type="radio" name="question1" value="1">非常不符合</label>
+        <label><input type="radio" name="question1" value="2">不太符合</label>
+        <label><input type="radio" name="question1" value="3">不确定</label>
+        <label><input type="radio" name="question1" value="4">比较符合</label>
+        <label><input type="radio" name="question1" value="5">非常符合</label>
+    </p>
+    <p>
+        2.	我觉得这种认证方案需要消耗很多记忆力。
+        <label><input type="radio" name="question2" value="1">非常不符合</label>
+        <label><input type="radio" name="question2" value="2">不太符合</label>
+        <label><input type="radio" name="question2" value="3">不确定</label>
+        <label><input type="radio" name="question2" value="4">比较符合</label>
+        <label><input type="radio" name="question2" value="5">非常符合</label>
+    </p>
+    <p>
+        3.	我觉得这种认证方案给我增加很大的心理负担。
+        <label><input type="radio" name="question3" value="1">非常不符合</label>
+        <label><input type="radio" name="question3" value="2">不太符合</label>
+        <label><input type="radio" name="question3" value="3">不确定</label>
+        <label><input type="radio" name="question3" value="4">比较符合</label>
+        <label><input type="radio" name="question3" value="5">非常符合</label>
+    </p>
+    <p>
+        4.	我觉得这种认证方案的操作很复杂。
+        <label><input type="radio" name="question4" value="1">非常不符合</label>
+        <label><input type="radio" name="question4" value="2">不太符合</label>
+        <label><input type="radio" name="question4" value="3">不确定</label>
+        <label><input type="radio" name="question4" value="4">比较符合</label>
+        <label><input type="radio" name="question4" value="5">非常符合</label>
+    </p>
+    <p>
+        5.	我觉得这种认证方案的认证成功率还可以。
+        <label><input type="radio" name="question5" value="1">非常不符合</label>
+        <label><input type="radio" name="question5" value="2">不太符合</label>
+        <label><input type="radio" name="question5" value="3">不确定</label>
+        <label><input type="radio" name="question5" value="4">比较符合</label>
+        <label><input type="radio" name="question5" value="5">非常符合</label>
+    </p>
+    <p>
+        6.	我觉得这种认证方案存在大量问题。
+        <label><input type="radio" name="question6" value="1">非常不符合</label>
+        <label><input type="radio" name="question6" value="2">不太符合</label>
+        <label><input type="radio" name="question6" value="3">不确定</label>
+        <label><input type="radio" name="question6" value="4">比较符合</label>
+        <label><input type="radio" name="question6" value="5">非常符合</label>
+    </p>
+    <p>
+        7.	我觉得这种认证方案值得推广。
+        <label><input type="radio" name="question7" value="1">非常不符合</label>
+        <label><input type="radio" name="question7" value="2">不太符合</label>
+        <label><input type="radio" name="question7" value="3">不确定</label>
+        <label><input type="radio" name="question7" value="4">比较符合</label>
+        <label><input type="radio" name="question7" value="5">非常符合</label>
+    </p>
+</div>
+<div id="b">
+    <p>
+        <input type="button" value="提交" id="submit">
+    </p>
+</div>
+</body>
+</html>

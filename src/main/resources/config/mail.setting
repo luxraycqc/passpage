@@ -1,0 +1,12 @@
+# 邮件服务器的SMTP地址
+host = smtp.163.com
+# 邮件服务器的SMTP端口
+port = 465
+# 发件人
+from = natural_city@163.com
+# 密码
+pass = wangyi020355
+# 使用STARTTLS安全连接，STARTTLS是对纯文本通信协议的扩展。
+startttlsEnable = true
+# 使用SSL安全连接
+sslEnable = true

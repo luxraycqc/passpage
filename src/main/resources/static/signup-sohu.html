@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>搜狐虚拟账号注册页面</title>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="sha256.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#check_email").click(function () {
+                let email = $("#email").val();
+                if (/.+@.+/.test(email)) {
+                    $.get("https://www.passpage.xyz:8443/checkEmail/www.sohu.com/" + email, function (msg) {
+                        if (msg === 0) $("#check_email_result").text("可以使用");
+                        else $("#check_email_result").text("已被使用");
+                    });
+                } else {
+                    alert("邮箱格式不对！");
+                }
+            });
+            $("#check_username").click(function () {
+                let username = $("#username").val();
+                if(/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
+                    $("#check_id_result").text("用户名不能含有汉字，可以用拼音代替");
+                } else {
+                    if (username.length > 0) {
+                        $.get("https://www.passpage.xyz:8443/checkUsername/www.sohu.com/" + username, function (msg) {
+                            if (msg === 0) $("#check_id_result").text("可以使用");
+                            else $("#check_id_result").text("已被使用");
+                        });
+                    } else {
+                        alert("请输入用户名！");
+                    }
+                }
+            });
+            $("#submit").click(function () {
+                let email = $("#email").val();
+                let username = $("#username").val();
+                let password = $("#password").val();
+                let password2 = $("#password2").val();
+                if (email.length > 0 && username.length > 0) {
+                    if (password !== password2) {
+                        alert("两次密码输入不一致！");
+                        return;
+                    }
+                    if(/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
+                        alert("用户名不能含有汉字，可以用拼音代替！");
+                        return;
+                    }
+                    let passwordHash = sha256(password);
+                    let request = {"email": email, "username": username, "passwordHash": passwordHash, "domain": "www.sohu.com"};
+                    $.ajax({
+                        type: "POST",
+                        url: "https://www.passpage.xyz:8443/signup",
+                        data: JSON.stringify(request),
+                        contentType: "application/json",
+                        dataType: "text",
+                        success: function (msg) {
+                            if (msg === 0) {
+                                alert("注册成功！已向您的邮箱发送了一封确认邮件，请登录邮箱查收并按照邮件提示操作。");
+                            } else if (msg === 1) {
+                                alert("此邮箱已被注册！");
+                            } else if (msg === 2) {
+                                alert("此用户名已被注册！");
+                            } else if (msg === 3) {
+                                alert("很抱歉，注册失败，请联系管理员解决。");
+                            }
+                        }
+                    });
+                } else {
+                    alert("请输入邮箱和用户名！");
+                }
+            });
+        });
+    </script>
+    <style>
+        h1 {
+            text-align: center
+        }
+
+        #a {
+            margin: 0 auto;
+            width: 360px
+        }
+
+        #a1 {
+            text-align: center
+        }
+
+        #a2 {
+            margin-left: 60px;
+            margin-right: 20px
+        }
+
+        #b {
+            margin: 0 auto;
+            width: 360px;
+            text-align: center
+        }
+
+        input {
+            margin-left: 10px
+        }
+    </style>
+</head>
+<body>
+<h1>搜狐虚拟账号注册页面</h1>
+<hr>
+<div id="a">
+    <div id="a1">
+        <a href="login-sohu.html">已有账号？点此进入登录页面</a>
+    </div>
+    <div id="a2">
+        <p>
+            邮箱：<input type="text" name="email" id="email" size="13px"><input type="button" value="检测"
+                                                                                  id="check_email">
+            <span id="check_email_result"></span>
+        </p>
+        <p>
+            用户名：<input type="text" name="username" id="username" size="10px"><input type="button" value="检测"
+                                                                                  id="check_username">
+            <span id="check_id_result"></span>
+        </p>
+        <p>
+            密码：<input type="password" name="password" id="password" size="10px">
+        </p>
+        <p>
+            重复密码：<input type="password" name="password" id="password2" size="10px">
+        </p>
+    </div>
+</div>
+<div id="b">
+    <p>
+        <input type="button" value="注册" id="submit">
+    </p>
+</div>
+</body>
+</html>

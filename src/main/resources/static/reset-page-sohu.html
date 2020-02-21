@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>搜狐虚拟账号图形口令重置页面</title>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="sha256.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#reset").click(function () {
+                let username = $("#username").val();
+                let password = $("#password").val();
+                if (username.length > 0 && password.length > 0) {
+                    let passwordHash = sha256(password);
+                    let request = {"username": username, "passwordHash": passwordHash, "domain": "www.sohu.com"};
+                    $.ajax({
+                        type: "POST",
+                        url: "https://www.passpage.xyz:8443/resetUserPage",
+                        data: JSON.stringify(request),
+                        contentType: "application/json",
+                        dataType: "text",
+                        success: function (msg) {
+                            if (msg === "0") {
+                                alert("图形口令重置成功！已向您的邮箱发送了一封确认邮件，请登录邮箱查收并按照邮件提示操作。");
+                            } else if (msg === "1") {
+                                alert("很抱歉，服务器异常");
+                            } else if (msg === "2") {
+                                alert("密码错误！");
+                            }
+                        }
+                    });
+                } else {
+                    alert("请输入用户名和验证码！");
+                }
+            });
+        });
+    </script>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        #a {
+            margin: 0 auto;
+            width: 360px;
+            text-align: center;
+        }
+        #a1 {
+            border-left: 30px;
+        }
+    </style>
+</head>
+<body>
+<h1>搜狐虚拟账号图形口令重置页面</h1>
+<hr>
+<div id="a">
+    <p>
+        用户名：<input type="text" name="username" id="username" size="10px">
+    </p>
+    <p>
+        密码：<input type="password" name="password" id="password" size="10px">
+    </p>
+    <div id="a1">
+        <p>
+            <input type="button" value="重置图形口令" id="reset"><span id="reset_result"></span>
+        </p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "PassPage Logger",
+  "description": "This extension saves what you read on given websites to build graphical passwords.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://www.sohu.com/*", "https://www.sohu.com/*", "https://weibo.com/*",
+      "https://www.zhihu.com/*", "https://tieba.baidu.com/*"],
+      "js": ["jquery-3.4.1.min.js", "cookie.js", "html2canvas.min.js", "sha256.min.js", "logger.js"]
+    }
+  ]
+}

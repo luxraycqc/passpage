@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" name="viewport"/>
+    <title>搜狐虚拟账号登录页面</title>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="sha256.min.js"></script>
+    <script>
+        let mixedPageUris = new Array(9);
+        let pageUriMap = new Array(9);
+        let lastTimestamp;
+        let passwordUsedTime = null;
+        function changePage() {
+            let username = $("#username").val();
+            if (username.length > 0) {
+                let changePageRequest = username + "-www.sohu.com-displayHead-" + passwordUsedTime;
+                $.get("https://www.passpage.xyz:8443/pageUris/" + changePageRequest, function (msg) {
+                    if (msg[0].length > 1) {
+                        $("#a").css("height", "120");
+                        $("#a1").css("display", "none");
+                        $("#a1-1").css("display", "inline");
+                        $("#return").css("display", "inline");
+                        $("#next_step").css("display", "none");
+                        $("#change").css("display", "inline");
+                        $("#login").css("display", "inline");
+                        lastTimestamp = (new Date()).getTime();
+                        $(".small_img").css("border", "2px solid white");
+                        $(".small_img").css("visibility", "visible");
+                        $(".small_page").css("visibility", "visible");
+                        let i;
+                        for (i = 0; i < msg.length; i++) {
+                            mixedPageUris[i] = msg[i];
+                            pageUriMap[i] = 0;
+                            let iframe = $("#c" + i);
+                            if (msg[i].substring(0, 5) === "page/") {
+                                $.get("https://www.passpage.xyz:8443/" + msg[i], function (data) {
+                                    iframe.attr("srcdoc", data);
+                                });
+                            } else if (msg[i].length > 1) {
+                                iframe.attr("srcdoc", null);
+                                iframe.attr("src", msg[i]);
+                            }
+                        }
+                        for (; i < 9; i++) {
+                            mixedPageUris[i] = msg[i];
+                            pageUriMap[i] = 0;
+                            $("#c" + i).attr("src", "");
+                            $("#c" + i).attr("srcdoc", "");
+                        }
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            lastTimestamp = (new Date()).getTime();
+            $("#a1-1").css("display", "none");
+            $("#return").css("display", "none");
+            $("#change").css("display", "none");
+            $("#login").css("display", "none");
+            $(".small_img").attr("width", document.documentElement.clientWidth / 3 - 20);
+            $(".small_page").attr("width", document.documentElement.clientWidth / 3 - 20);
+            $("#next_step").click(function () {
+                if (passwordUsedTime === null) {
+                    passwordUsedTime = (new Date()).getTime() - lastTimestamp;
+                }
+                let username = $("#username").val();
+                if (username.length > 0) {
+                    let password = $("#password").val();
+                    let passwordHash = sha256(password);
+                    let request = {"username": username, "passwordHash": passwordHash, "domain": "www.sohu.com"};
+                    $.ajax({
+                        type: "POST",
+                        url: "https://www.passpage.xyz:8443/loginPassword",
+                        data: JSON.stringify(request),
+                        contentType: "application/json",
+                        dataType: "text",
+                        success: function (data) {
+                            if (data === "1") {
+                                alert("很抱歉，服务器异常");
+                            } else if (data === "2") {
+                                alert("密码错误！");
+                            } else {
+                                changePage();
+                            }
+                        }
+                    });
+                } else {
+                    alert("请输入用户名！");
+                }
+            });
+            $("#change").click(function () {
+                changePage();
+            });
+            $("#return").click(function () {
+                $("#a").css("height", "170");
+                $("#a1").css("display", "inline");
+                $("#a1-1").css("display", "none");
+                $("#return").css("display", "none");
+                $("#next_step").css("display", "inline");
+                $("#change").css("display", "none");
+                $("#login").css("display", "none");
+            });
+            window.onresize = function () {
+                $(".small_img").attr("width", document.documentElement.clientWidth / 3 - 20);
+                $(".small_page").attr("width", document.documentElement.clientWidth / 3 - 20);
+            };
+            window.addEventListener("beforeunload", function (e) {
+                let username = $("#username").val();
+                if (username.length > 0) {
+                    $.get("https://www.passpage.xyz:8443/quit/www.sohu.com/" + username, function (msg) {
+                    });
+                }
+            });
+            $(".small_img").click(function () {
+                let pageId = $(this).attr("id");
+                let indexStr = pageId.substr(1, 1);
+                if (pageUriMap[indexStr] === 0) {
+                    pageUriMap[indexStr] = 1;
+                    $(this).css("border", "2px solid red");
+                } else {
+                    pageUriMap[indexStr] = 0;
+                    $(this).css("border", "2px solid white");
+                }
+            });
+            $("#login").click(function () {
+                let usedTime = (new Date()).getTime() - lastTimestamp + passwordUsedTime;
+                let chosenPageUris = [];
+                let j = 0;
+                for (let i = 0; i < 9; i++) {
+                    if (pageUriMap[i] === 1) {
+                        chosenPageUris[j++] = mixedPageUris[i];
+                    }
+                }
+                if (j > 0) {
+                    let username = $("#username").val();
+                    let request = {
+                        "username": username,
+                        "domain": "www.sohu.com",
+                        "loginMode": "displayHead",
+                        "chosenPageUris": chosenPageUris,
+                        "usedTime": usedTime
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: "https://www.passpage.xyz:8443/login",
+                        data: JSON.stringify(request),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (msg) {
+                            if (msg.length > 1) {
+                                window.location.href = msg;
+                            } else if (msg === "4") {
+                                alert("登录次数超限，请重置口令");
+                                window.location.href = "reset-user-images-sohu.html";
+                            } else {
+                                alert("很抱歉，服务器异常");
+                            }
+                        }
+                    });
+                } else {
+                    alert("请点击所有您浏览过的网页，再登录");
+                }
+            });
+        });
+    </script>
+    <style>
+        input {
+            margin-left: 10px;
+            margin-right: 10px
+        }
+
+        #a {
+            position: fixed;
+            width: 250px;
+            height: 170px;
+            top: 180px;
+            left: 0px;
+            right: 0px;
+            margin: auto;
+            background-color: lightskyblue;
+            z-index: 3;
+        }
+
+        #a1 {
+            text-align: center;
+        }
+
+        #a1-1 {
+            text-align: center;
+        }
+
+        #a2 {
+            text-align: center
+        }
+
+        #b {
+            position: absolute;
+            text-align: center;
+            margin: auto;
+            z-index: 2;
+        }
+
+        .small_img {
+            height: 400px;
+            margin: 2px;
+            border: 2px solid white;
+            visibility: hidden;
+        }
+
+        #c {
+            position: absolute;
+            text-align: center;
+            margin: auto;
+            z-index: 1;
+        }
+
+        .small_page {
+            height: 400px;
+            margin-bottom: 4px;
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+<div id="a">
+    <div id="a1">
+        <p>
+            <a href="signup-sohu.html">没有账号？点此进入注册页面</a>
+        </p>
+        <p>
+            用户名：<input id="username" name="username" size="10px" type="text">
+        </p>
+        <p>
+            密码：<input type="password" name="password" id="password" size="10px">
+        </p>
+    </div>
+    <div id="a1-1">
+        <p>
+            请点击所有您浏览过的网页，然后点击“登录”
+        </p>
+    </div>
+    <div id="a2">
+        <p>
+            <input id="return" type="button" value="返回">
+            <input id="next_step" type="button" value="下一步">
+            <input id="change" type="button" value="切换">
+            <input id="login" type="button" value="登录">
+        </p>
+    </div>
+</div>
+<div id="b">
+    <img class="small_img" id="b0"><img class="small_img" id="b1"><img class="small_img" id="b2"><br>
+    <img class="small_img" id="b3"><img class="small_img" id="b4"><img class="small_img" id="b5"><br>
+    <img class="small_img" id="b6"><img class="small_img" id="b7"><img class="small_img" id="b8"><br>
+</div>
+<div id="c">
+    <iframe class="small_page" id="c0"></iframe>
+    <iframe class="small_page" id="c1"></iframe>
+    <iframe class="small_page" id="c2"></iframe>
+    <br>
+    <iframe class="small_page" id="c3"></iframe>
+    <iframe class="small_page" id="c4"></iframe>
+    <iframe class="small_page" id="c5"></iframe>
+    <br>
+    <iframe class="small_page" id="c6"></iframe>
+    <iframe class="small_page" id="c7"></iframe>
+    <iframe class="small_page" id="c8"></iframe>
+    <br>
+</div>
+</body>
+
+</html>

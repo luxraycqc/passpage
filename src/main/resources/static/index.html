@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+    <title>基于网页浏览记录的图形口令认证方案</title>
+    <script src="jquery-3.4.1.min.js"></script>
+    <style>
+        h1 {
+            text-align: center
+        }
+        #a {
+            margin: 0 auto;
+            padding-left: 5%;
+            padding-right: 5%
+        }
+        #b {
+            margin: 0 auto;
+            padding-left: 5%;
+            padding-right: 5%
+        }
+        #c {
+            margin: 0 auto;
+            padding-left: 5%;
+            padding-right: 5%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1>基于网页浏览记录的图形口令认证方案</h1>
+<hr>
+<div id="a">
+    <h2>摘要</h2>
+    <p>
+        目前有一部分网站使用双因子认证方案进行用户认证，通常是在文字密码认证的基础上附加随机码验证。这种方案存在一定的局限性。图形口令认证也可以作为网站的另一个认证因子，但是现有的图形口令认证方案并不适合用在网站上，尤其是多个网站上。
+    </p>
+    <p>
+        本文提出一种适用于网站认证的新型双因子图形口令认证方案。它利用了基于用户浏览记录的内隐记忆，能够在增强安全性的同时不失便捷性，而且不会增加用户的记忆负担。当用户需要登录时，先输入用户名和文字密码，如果密码正确的话服务器会返回9个小网页，用户从中选出所有自己浏览过的网页，只有选择正确才能成功登录。
+    </p>
+    <p>
+        笔者召集到12名志愿者进行用户实验。实验结果表明，对于一个新闻网站，当用户已经熟悉了登录流程后，平均登录成功率可保持在80%以上，并且这个成功率在6天以内不会明显下降。
+    </p>
+</div>
+
+<hr>
+<div id="c">
+    <a href="http://beian.miit.gov.cn">京ICP备19045384号-1</a>
+    版权所有：储贤
+</div>
+</body>
+</html>
