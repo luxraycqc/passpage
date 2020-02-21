@@ -23,6 +23,7 @@
                         $("#next_step").css("display", "none");
                         $("#change").css("display", "inline");
                         $("#login").css("display", "inline");
+                        $("#a3").css("display", "none");
                         $(".small_img").css("border", "2px solid white");
                         $(".small_img").css("visibility", "visible");
                         $(".small_page").css("visibility", "visible");
@@ -95,6 +96,7 @@
                 $("#next_step").css("display", "inline");
                 $("#change").css("display", "none");
                 $("#login").css("display", "none");
+                $("#a3").css("display", "inline");
             });
             window.onresize = function () {
                 $(".small_img").attr("width", document.documentElement.clientWidth / 3 - 20);
@@ -149,7 +151,7 @@
                                 alert("请刷新本页面后重试");
                             } else if (msg === "4") {
                                 alert("登录次数超限，请重置口令");
-                                window.location.href = "reset-user-images-sohu.html";
+                                window.location.href = "reset-page-sohu.html";
                             } else {
                                 alert("很抱歉，服务器异常");
                             }
@@ -191,6 +193,10 @@
             text-align: center
         }
 
+        #a3 {
+            text-align: center;
+        }
+
         #b {
             position: absolute;
             text-align: center;
@@ -224,9 +230,6 @@
 <div id="a">
     <div id="a1">
         <p>
-            <a href="signup-sohu.html">没有账号？点此进入注册页面</a>
-        </p>
-        <p>
             用户名：<input id="username" name="username" size="10px" type="text">
         </p>
         <p>
@@ -244,6 +247,11 @@
             <input id="next_step" type="button" value="下一步">
             <input id="change" type="button" value="切换">
             <input id="login" type="button" value="登录">
+        </p>
+    </div>
+    <div id="a3">
+        <p>
+            <a href="reset-password-sohu.html">忘记密码？点此进入密码重置页面</a>
         </p>
     </div>
 </div>
