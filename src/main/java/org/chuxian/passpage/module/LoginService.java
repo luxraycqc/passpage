@@ -79,6 +79,7 @@ public class LoginService {
                     String url = "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
                     String email = SqlUtil.queryOne(connection, "SELECT email FROM user_account WHERE username = ? AND domain = ?", username, domain).getStr("email");
                     MailUtil.send(email, domain + "临时登录链接", "请点击此链接以登录：" + url, false);
+                    userLoginStates.remove(domain + username);
                     DbUtil.close(connection);
                     return new String[]{"4"};
                 }
@@ -125,6 +126,7 @@ public class LoginService {
             } else {
                 log.info("username为" + username + "请求网站" + domain + "的网页，但是不存在此用户");
                 userLoginStates.remove(domain + username);
+                DbUtil.close(connection);
                 return new String[]{"5"};
             }
             if (mixedFileNames.size() > 0) {
@@ -133,6 +135,7 @@ public class LoginService {
                 return mixedFileNames.toArray(new String[0]);
             } else {
                 log.warn("没有网页！");
+                userLoginStates.remove(domain + username);
                 DbUtil.close(connection);
                 return new String[]{"6"};
             }

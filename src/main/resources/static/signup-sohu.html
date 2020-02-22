@@ -46,7 +46,7 @@
                         return;
                     }
                     if(/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
-                        alert("用户名不能含有汉字，可以用拼音代替！");
+                        alert("用户名不能含有汉字，可以用拼音代替。");
                         return;
                     }
                     let passwordHash = sha256(password);
