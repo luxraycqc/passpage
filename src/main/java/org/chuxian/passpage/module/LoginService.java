@@ -68,24 +68,24 @@ public class LoginService {
                 userLoginState.decoyFileNames.clear();
             }
             userLoginState.addAvailableChangeCount(-1);
-            HashSet<String> allRealTitles = new HashSet<>();
             Connection connection = dataSource.getConnection();
             if (signupService.checkUsername(domain, username) == 1) {
-                List<Entity> realPageEntities = SqlUtil.query(connection, "SELECT * FROM user_page WHERE username=? AND domain=? and deleted=0 ORDER BY RAND()", username, domain);
-                if (realPageEntities.size() == 0) {
+                List<Entity> allRealPageEntities = SqlUtil.query(connection, "SELECT * FROM user_page WHERE username=? AND domain=? and deleted=0 ORDER BY RAND()", username, domain);
+                if (allRealPageEntities.size() == 0) {
                     log.warn("没有真实网页！");
                     DbUtil.close(connection);
                     userLoginState.realFileNames.add("default.html");
                     return new String[]{"default.html"};
                 }
                 int limit = 3;
-                if (realPageEntities.size() < 6) limit = 2;
-                if (realPageEntities.size() < 3) limit = 1;
+                if (allRealPageEntities.size() < 6) limit = 2;
+                if (allRealPageEntities.size() < 3) limit = 1;
                 log.info("username为" + username + "请求网站" + domain + "的网页，给" + limit + "个真的");
+                HashSet<String> allRealTitles = new HashSet<>();
                 int i = 0;
                 Date earliestTime = new Date();
                 Date latestTime = new Date(0);
-                for (Entity realPageEntity : realPageEntities) {
+                for (Entity realPageEntity : allRealPageEntities) {
                     allRealTitles.add(realPageEntity.getStr("title"));
                     if (i < limit) {
                         Date addedTime = realPageEntity.getDate("added_time");
