@@ -78,8 +78,8 @@ public class LoginService {
                     return new String[]{"default.html"};
                 }
                 int limit = 3;
-                if (allRealPageEntities.size() < 6) limit = 2;
-                if (allRealPageEntities.size() < 3) limit = 1;
+                if (allRealPageEntities.size() <= 5) limit = 2;
+                if (allRealPageEntities.size() <= 3) limit = 1;
                 log.info("username为" + username + "请求网站" + domain + "的网页，给" + limit + "个真的");
                 HashSet<String> allRealTitles = new HashSet<>();
                 int i = 0;
