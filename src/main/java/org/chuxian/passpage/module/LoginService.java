@@ -73,10 +73,14 @@ public class LoginService {
             if (signupService.checkUsername(domain, username) == 1) {
                 List<Entity> allRealPageEntities = SqlUtil.query(connection, "SELECT * FROM user_page WHERE username=? AND domain=? and deleted=0 ORDER BY RAND()", username, domain);
                 if (allRealPageEntities.size() == 0) {
-                    log.warn("没有真实网页！");
+                    log.warn("没有真实网页！");String sessionId = RandomUtil.randomString(20);
+                    CommonController.sessionMap.put(domain + username, sessionId);
+                    log.info("domain=" + domain + ";username=" + username + ";sessionId=" + sessionId);
+                    String url = "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
+                    String email = SqlUtil.queryOne(connection, "SELECT email FROM user_account WHERE username = ? AND domain = ?", username, domain).getStr("email");
+                    MailUtil.send(email, domain + "临时登录链接", "请点击此链接以登录：" + url, false);
                     DbUtil.close(connection);
-                    userLoginState.realFileNames.add("default.html");
-                    return new String[]{"default.html"};
+                    return new String[]{"4"};
                 }
                 int limit = 3;
                 if (allRealPageEntities.size() <= 5) limit = 2;
@@ -121,7 +125,7 @@ public class LoginService {
             } else {
                 log.info("username为" + username + "请求网站" + domain + "的网页，但是不存在此用户");
                 userLoginStates.remove(domain + username);
-                return new String[]{"4"};
+                return new String[]{"5"};
             }
             if (mixedFileNames.size() > 0) {
                 log.info(mixedFileNames.toString());
@@ -129,14 +133,8 @@ public class LoginService {
                 return mixedFileNames.toArray(new String[0]);
             } else {
                 log.warn("没有网页！");
-                String sessionId = RandomUtil.randomString(20);
-                CommonController.sessionMap.put(domain + username, sessionId);
-                log.info("domain=" + domain + ";username=" + username + ";sessionId=" + sessionId);
-                String url = "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
-                String email = SqlUtil.queryOne(connection, "SELECT email FROM user_account WHERE username = ? AND domain = ?", username, domain).getStr("email");
-                MailUtil.send(email, domain + "临时登录链接", "请点击此链接以登录：" + url, false);
                 DbUtil.close(connection);
-                return new String[]{"5"};
+                return new String[]{"6"};
             }
         } catch (Exception e) {
             log.error(e);
