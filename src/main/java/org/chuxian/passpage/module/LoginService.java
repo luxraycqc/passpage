@@ -3,6 +3,7 @@ package org.chuxian.passpage.module;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
+import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import org.chuxian.passpage.utils.SqlUtil;
@@ -50,7 +51,7 @@ public class LoginService {
 
     public String[] getMixedPageUris(String username, String domain, String loginMode) {
         try {
-            if (userLoginPasswordStates.get(domain + username) != 1) return new String[]{"1"};
+            if (userLoginPasswordStates.get(domain + username) != 1) return new String[]{"2"};
             TreeSet<String> mixedFileNames = new TreeSet<>();
             UserLoginState userLoginState = userLoginStates.get(domain + username);
             if (userLoginState == null) {
@@ -63,7 +64,7 @@ public class LoginService {
                     mixedFileNames.addAll(userLoginState.decoyFileNames);
                     return mixedFileNames.toArray(new String[0]);
                 }
-                if (userLoginState.getAvailableChangeCount() < 1) return new String[]{"2"};
+                if (userLoginState.getAvailableChangeCount() < 1) return new String[]{"3"};
                 userLoginState.realFileNames.clear();
                 userLoginState.decoyFileNames.clear();
             }
@@ -120,7 +121,7 @@ public class LoginService {
             } else {
                 log.info("username为" + username + "请求网站" + domain + "的网页，但是不存在此用户");
                 userLoginStates.remove(domain + username);
-                return new String[]{"1"};
+                return new String[]{"4"};
             }
             if (mixedFileNames.size() > 0) {
                 log.info(mixedFileNames.toString());
@@ -128,13 +129,18 @@ public class LoginService {
                 return mixedFileNames.toArray(new String[0]);
             } else {
                 log.warn("没有网页！");
+                String sessionId = RandomUtil.randomString(20);
+                CommonController.sessionMap.put(domain + username, sessionId);
+                log.info("domain=" + domain + ";username=" + username + ";sessionId=" + sessionId);
+                String url = "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
+                String email = SqlUtil.queryOne(connection, "SELECT email FROM user_account WHERE username = ? AND domain = ?", username, domain).getStr("email");
+                MailUtil.send(email, domain + "临时登录链接", "请点击此链接以登录：" + url, false);
                 DbUtil.close(connection);
-                userLoginState.realFileNames.add("default.html");
-                return new String[]{"default.html"};
+                return new String[]{"5"};
             }
         } catch (Exception e) {
             log.error(e);
-            return new String[]{"error.html"};
+            return new String[]{"1"};
         }
     }
 

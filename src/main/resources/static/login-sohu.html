@@ -48,7 +48,7 @@
                             $("#c" + i).attr("src", "");
                             $("#c" + i).attr("srcdoc", "");
                         }
-                    } else if (msg[0] === "2") {
+                    } else if (msg[0] === "3") {
                         $("#a").css("height", "120");
                         $("#a1").css("display", "none");
                         $("#a1-1").css("display", "inline");
@@ -61,6 +61,10 @@
                             alert("在登录之前不允许连续切换！");
                             changeFlag = false;
                         }
+                    } else if (msg[0] === "5") {
+                        alert("由于您没有浏览记录，无法进行图形口令认证。已向您的邮箱发送了一封确认邮件，请登录邮箱查收并按照邮件提示操作。");
+                    } else {
+                        alert("很抱歉，服务器异常。");
                     }
                 });
             }
@@ -161,14 +165,14 @@
                             if (msg.length > 1) {
                                 window.location.href = msg;
                             } else if (msg === "2" || msg === "5") {
-                                alert("图形口令错误，请重新选择或点击“切换”后重新选择");
+                                alert("图形口令错误，请重新选择或点击“切换”后重新选择。");
                             } else if (msg === "3") {
-                                alert("请刷新本页面后重试");
+                                alert("请刷新本页面后重试。");
                             } else if (msg === "4") {
-                                alert("登录次数超限，请重置口令");
+                                alert("登录次数超限，请重置图形口令。");
                                 window.location.href = "reset-page-sohu.html";
                             } else {
-                                alert("很抱歉，服务器异常");
+                                alert("很抱歉，服务器异常。");
                             }
                         }
                     });
