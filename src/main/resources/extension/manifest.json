@@ -12,7 +12,7 @@
   "content_scripts": [
     {
       "matches": ["http://www.sohu.com/*", "https://www.sohu.com/*", "https://www.zhihu.com/*"],
-      "js": ["jquery-3.4.1.min.js", "cookie.js", "html2canvas.min.js", "sha256.min.js", "logger.js"]
+      "js": ["jquery-3.4.1.min.js", "cookie.js", "sha256.min.js", "logger.js"]
     }
   ]
 }
