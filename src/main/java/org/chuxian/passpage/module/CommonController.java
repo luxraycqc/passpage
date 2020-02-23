@@ -22,11 +22,6 @@ public class CommonController {
 
     public static HashMap<String, String> sessionMap = new HashMap<>();
 
-    @GetMapping("/")
-    public String home() {
-        return "/index.html";
-    }
-
     @RequestMapping(value="/checkEmail/{domain}/{email}", method = RequestMethod.GET)
     @ResponseBody
     public int checkEmail(@PathVariable String domain, @PathVariable String email) {

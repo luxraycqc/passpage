@@ -20,7 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Import({springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class })
 public class SwaggerConfig {
 	@Value("${spring.application.name}")
-	private String appname;
+	private String appName;
 	@Value("${termsOfServiceUrl}")
 	private String termsOfServiceUrl;
 	@Value("${app.version}")
@@ -33,8 +33,8 @@ public class SwaggerConfig {
 
 	@Bean
 	public Docket userApi() {
-		final String appname1 = myAppname();
-		return new Docket(DocumentationType.SWAGGER_2).groupName(appname1).apiInfo(apiInfo()).select()
+		final String appName1 = myAppName();
+		return new Docket(DocumentationType.SWAGGER_2).groupName(appName1).apiInfo(apiInfo()).select()
 				.paths(userPaths()).build().ignoredParameterTypes(ApiIgnore.class).enableUrlTemplating(false);
 	}
 
@@ -42,8 +42,8 @@ public class SwaggerConfig {
 		return PathSelectors.regex(".*");
 	}
 
-	String myAppname() {
-		return appname.replaceAll(localhost, serveIp) + " Ver " + version + " Build " + buildTime;
+	String myAppName() {
+		return appName.replaceAll(localhost, serveIp) + " Ver " + version + " Build " + buildTime;
 	}
 	
 	String myTermsOfServiceUrl() {
@@ -52,8 +52,8 @@ public class SwaggerConfig {
 	
 	ApiInfo apiInfo() {
 		final String termsOfServiceUrl1 = myTermsOfServiceUrl();
-		final String appname1 = myAppname();
-		return new ApiInfoBuilder().title(appname1).description(appname1).termsOfServiceUrl(termsOfServiceUrl1)
+		final String appName1 = myAppName();
+		return new ApiInfoBuilder().title(appName1).description(appName1).termsOfServiceUrl(termsOfServiceUrl1)
 				.version(version).build();
 	}
 }
