@@ -22,7 +22,7 @@
             });
             $("#check_username").click(function () {
                 let username = $("#username").val();
-                if(/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
+                if (/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
                     $("#check_id_result").text("用户名不能含有汉字，可以用拼音代替");
                 } else {
                     if (username.length > 0) {
@@ -45,12 +45,17 @@
                         alert("两次密码输入不一致！");
                         return;
                     }
-                    if(/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
+                    if (/.*[\u4e00-\u9fa5]+.*$/.test(username)) {
                         alert("用户名不能含有汉字，可以用拼音代替。");
                         return;
                     }
                     let passwordHash = sha256(password);
-                    let request = {"email": email, "username": username, "passwordHash": passwordHash, "domain": "www.sohu.com"};
+                    let request = {
+                        "email": email,
+                        "username": username,
+                        "passwordHash": passwordHash,
+                        "domain": "www.sohu.com"
+                    };
                     $.ajax({
                         type: "POST",
                         url: "https://www.passpage.xyz:8443/signup",
@@ -108,12 +113,12 @@
     <div id="a1">
         <p>
             邮箱：<input type="text" name="email" id="email" size="13px"><input type="button" value="检测"
-                                                                                  id="check_email">
+                                                                             id="check_email">
             <span id="check_email_result"></span>
         </p>
         <p>
             用户名：<input type="text" name="username" id="username" size="10px"><input type="button" value="检测"
-                                                                                  id="check_username">
+                                                                                    id="check_username">
             <span id="check_id_result"></span>
         </p>
         <p>
