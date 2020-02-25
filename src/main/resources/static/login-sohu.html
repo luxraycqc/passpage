@@ -38,15 +38,11 @@
                                 $.get("https://www.passpage.xyz:8443/" + msg[i], function (data) {
                                     iframe.attr("srcdoc", data);
                                 });
-                            } else if (msg[i].length > 1) {
-                                iframe.attr("srcdoc", null);
-                                iframe.attr("src", msg[i]);
                             }
                         }
                         for (; i < 9; i++) {
                             mixedPageUris[i] = msg[i];
                             pageUriMap[i] = 0;
-                            $("#c" + i).attr("src", "");
                             $("#c" + i).attr("srcdoc", "");
                         }
                     } else if (msg[0] === "2") {
