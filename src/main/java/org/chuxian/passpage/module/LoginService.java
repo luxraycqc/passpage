@@ -182,6 +182,7 @@ public class LoginService {
                 CommonController.sessionMap.put(domain + username, sessionId);
                 log.info("domain=" + domain + ";username=" + username + ";sessionId=" + sessionId);
                 userLoginPasswordStates.remove(domain + username);
+                userLoginStates.remove(domain + username);
                 return "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
             } else {
                 userLoginState.setScore(0);
@@ -201,16 +202,16 @@ public class LoginService {
         }
     }
 
-    public void deleteOldPages(String username, String domain) {
-        try {
-            long thresholdTime = System.currentTimeMillis() / 1000 - 864000;
-            Connection connection = dataSource.getConnection();
-            int count = SqlUtil.execute(connection, "update user_page set deleted = 1 where domain = ? and username = ? and unix_timestamp(added_time) < ?", domain, thresholdTime);
-            log.info("删除username=" + username + "的10天前的日志" + count + "个");
-            DbUtil.close(connection);
-        } catch (Exception e) {
-            log.error(e);
-        }
-    }
+//    public void deleteOldPages(String username, String domain) {
+//        try {
+//            long thresholdTime = System.currentTimeMillis() / 1000 - 864000;
+//            Connection connection = dataSource.getConnection();
+//            int count = SqlUtil.execute(connection, "update user_page set deleted = 1 where domain = ? and username = ? and unix_timestamp(added_time) < ?", domain, thresholdTime);
+//            log.info("删除username=" + username + "的10天前的日志" + count + "个");
+//            DbUtil.close(connection);
+//        } catch (Exception e) {
+//            log.error(e);
+//        }
+//    }
 
 }
