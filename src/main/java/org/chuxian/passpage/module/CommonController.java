@@ -21,7 +21,7 @@ public class CommonController {
     Log log = LogFactory.get();
 
     public static HashMap<String, String> sessionMap = new HashMap<>();
-    
+
     @RequestMapping(value="/checkUserSession/{domain}/{session}", method = RequestMethod.GET)
     @ResponseBody
     public int checkUserSession(@PathVariable String domain, @PathVariable String session) {
