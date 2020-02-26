@@ -1,5 +1,7 @@
 package org.chuxian.passpage.module;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import org.chuxian.passpage.message.SignupRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +11,30 @@ import org.springframework.web.bind.annotation.*;
 public class SignupController {
     @Autowired
     SignupService signupService;
+
+    Log log = LogFactory.get();
+
+    @RequestMapping(value="/checkEmail/{domain}/{email}", method = RequestMethod.GET)
+    @ResponseBody
+    public int checkEmail(@PathVariable String domain, @PathVariable String email) {
+        try {
+            return signupService.checkEmail(domain, email);
+        } catch (Exception e) {
+            log.error(e);
+            return 1;
+        }
+    }
+
+    @RequestMapping(value="/checkUsername/{domain}/{username}", method = RequestMethod.GET)
+    @ResponseBody
+    public int checkUsername(@PathVariable String domain, @PathVariable String username) {
+        try {
+            return signupService.checkUsername(domain, username);
+        } catch (Exception e) {
+            log.error(e);
+            return 1;
+        }
+    }
 
     @RequestMapping(value="/signup", method = RequestMethod.POST)
     @ResponseBody

@@ -21,29 +21,7 @@ public class CommonController {
     Log log = LogFactory.get();
 
     public static HashMap<String, String> sessionMap = new HashMap<>();
-
-    @RequestMapping(value="/checkEmail/{domain}/{email}", method = RequestMethod.GET)
-    @ResponseBody
-    public int checkEmail(@PathVariable String domain, @PathVariable String email) {
-        try {
-            return signupService.checkEmail(domain, email);
-        } catch (Exception e) {
-            log.error(e);
-            return 1;
-        }
-    }
-
-    @RequestMapping(value="/checkUsername/{domain}/{username}", method = RequestMethod.GET)
-    @ResponseBody
-    public int checkUsername(@PathVariable String domain, @PathVariable String username) {
-        try {
-            return signupService.checkUsername(domain, username);
-        } catch (Exception e) {
-            log.error(e);
-            return 1;
-        }
-    }
-
+    
     @RequestMapping(value="/checkUserSession/{domain}/{session}", method = RequestMethod.GET)
     @ResponseBody
     public int checkUserSession(@PathVariable String domain, @PathVariable String session) {
