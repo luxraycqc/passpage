@@ -15,8 +15,6 @@ public class CommonController {
     Config config;
     @Autowired
     DataSource dataSource;
-    @Autowired
-    SignupService signupService;
 
     Log log = LogFactory.get();
 
