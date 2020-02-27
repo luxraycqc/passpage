@@ -34,11 +34,11 @@ public class LoginService {
             Entity result = SqlUtil.queryOne(connection, "SELECT 1 FROM user_account WHERE username = ? AND password_hash = ? AND domain = ?", username, passwordHash, domain);
             DbUtil.close(connection);
             if (result != null) {
-                log.info("domain为"+ domain + ",username为" + username + "密码正确");
+                log.info("domain为" + domain + ",username为" + username + "密码正确");
                 userLoginPasswordStates.put(domain + username, 1);
                 return "0";
             } else {
-                log.info("domain为"+ domain + ",username为" + username + "密码错误");
+                log.info("domain为" + domain + ",username为" + username + "密码错误");
                 return "2";
             }
         } catch (Exception e) {
@@ -73,7 +73,8 @@ public class LoginService {
             if (signupService.checkUsername(domain, username) == 1) {
                 List<Entity> allRealPageEntities = SqlUtil.query(connection, "SELECT * FROM user_page WHERE username=? AND domain=? and deleted=0 ORDER BY RAND()", username, domain);
                 if (allRealPageEntities.size() == 0) {
-                    log.warn("没有真实网页！");String sessionId = RandomUtil.randomString(20);
+                    log.warn("没有真实网页！");
+                    String sessionId = RandomUtil.randomString(20);
                     CommonController.sessionMap.put(domain + username, sessionId);
                     log.info("domain=" + domain + ";username=" + username + ";sessionId=" + sessionId);
                     String url = "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
@@ -112,7 +113,7 @@ public class LoginService {
                 Entity decoyPageCountEntity = SqlUtil.queryOne(connection, "SELECT count(1) FROM decoy_page WHERE domain = ? and unix_timestamp(added_time) <= ? and unix_timestamp(added_time) >= ?", domain, latestTime.getTime() / 1000 + 86400, earliestTime.getTime() / 1000 - 86400);
                 long decoyPageCount = decoyPageCountEntity.getLong("count(1)");
                 double randThreshold = 1;
-                if (decoyPageCount > 0) randThreshold = (double)decoyLimit / decoyPageCount * 3;
+                if (decoyPageCount > 0) randThreshold = (double) decoyLimit / decoyPageCount * 3;
                 List<Entity> decoyPageEntities = SqlUtil.query(connection, "SELECT file_name, title FROM decoy_page WHERE domain = ? and rand() < ? and unix_timestamp(added_time) <= ? and unix_timestamp(added_time) >= ? limit " + decoyLimit, domain, randThreshold, latestTime.getTime() / 1000 + 86400, earliestTime.getTime() / 1000 - 86400);
                 for (Entity decoyPageEntity : decoyPageEntities) {
                     if (i < 9 && !allRealTitles.contains(decoyPageEntity.getStr("title"))) {
