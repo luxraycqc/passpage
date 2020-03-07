@@ -6,7 +6,6 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import org.chuxian.passpage.utils.SqlUtil;
@@ -51,7 +50,11 @@ public class DecoyPageService {
         String[] loginModes = new String[]{"/displayRaw", "/displayHead"};
         try {
             log.info("开始爬取" + domain + "上的所有网页");
-            String homepageHtml = HttpUtil.get(domain);
+            String homepageHtml = HttpRequest.get("https://" + domain)
+                    .setReadTimeout(10000)
+                    .setConnectionTimeout(10000)
+                    .setMaxRedirectCount(2)
+                    .execute().body();
             List<String> linkUrls = ReUtil.findAll("(www.sohu.com/a/.*?)\"", homepageHtml, 1);
             log.info("主页和链接获取成功");
             Connection connection = dataSource.getConnection();
@@ -96,7 +99,7 @@ public class DecoyPageService {
         String[] loginModes = new String[]{"/displayRaw", "/displayHead"};
         try {
             log.info("开始爬取" + domain + "上的所有网页");
-            String homepageHtml = HttpRequest.get(domain + "/explore")
+            String homepageHtml = HttpRequest.get("https://" + domain + "/explore")
                     .cookie(cookie)
                     .setReadTimeout(10000)
                     .setConnectionTimeout(10000)
@@ -156,6 +159,20 @@ public class DecoyPageService {
         if (deletedFileNames.size() > 0) {
             int count = SqlUtil.execute(connection, "delete from decoy_page where domain = ? and file_name in " + deletedFileNames.toString().replaceAll("\\[", "(").replaceAll("\\]", ")"), domain);
             log.info("随机删除3天前10天内的网页" + count + "个");
+        }
+    }
+
+    public static void main(String[] args) {
+        String domain = "www.sohu.com";
+        String homepageHtml = HttpRequest.get("https://" + domain)
+                .setReadTimeout(10000)
+                .setConnectionTimeout(10000)
+                .setMaxRedirectCount(2)
+                .execute().body();
+        System.out.println(homepageHtml);
+        List<String> linkUrls = ReUtil.findAll("(www.sohu.com/a/.*?)\"", homepageHtml, 1);
+        for (String linkUrl : linkUrls) {
+            System.out.println(linkUrl);
         }
     }
 
