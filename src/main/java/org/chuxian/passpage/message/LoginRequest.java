@@ -9,6 +9,10 @@ public class LoginRequest {
 
     String[] chosenPageUris;
 
+    int passwordUsedTime;
+
+    int usedTime;
+
     public String getUsername() {
         return username;
     }
@@ -41,4 +45,19 @@ public class LoginRequest {
         this.chosenPageUris = chosenPageUris;
     }
 
+    public int getPasswordUsedTime() {
+        return passwordUsedTime;
+    }
+
+    public void setPasswordUsedTime(int passwordUsedTime) {
+        this.passwordUsedTime = passwordUsedTime;
+    }
+
+    public int getUsedTime() {
+        return usedTime;
+    }
+
+    public void setUsedTime(int usedTime) {
+        this.usedTime = usedTime;
+    }
 }

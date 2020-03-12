@@ -11,7 +11,8 @@
         let mixedPageUris = new Array(9);
         let pageUriMap = new Array(9);
         let changeFlag = false;
-
+        let lastTimestamp;
+        let passwordUsedTime;
         function changePage() {
             let username = $("#username").val();
             if (username.length > 0) {
@@ -29,6 +30,7 @@
                         $(".small_img").css("border", "2px solid white");
                         $(".small_img").css("visibility", "visible");
                         $(".small_page").css("visibility", "visible");
+                        lastTimestamp = (new Date()).getTime();
                         let i;
                         for (i = 0; i < msg.length; i++) {
                             mixedPageUris[i] = msg[i];
@@ -70,6 +72,7 @@
         }
 
         $(document).ready(function () {
+            lastTimestamp = (new Date()).getTime();
             $("#a1-1").css("display", "none");
             $("#return").css("display", "none");
             $("#change").css("display", "none");
@@ -94,6 +97,9 @@
                             } else if (data === "2") {
                                 alert("密码错误！");
                             } else {
+                                if (!passwordUsedTime) {
+                                    passwordUsedTime = (new Date()).getTime() - lastTimestamp;
+                                }
                                 changePage();
                             }
                         }
@@ -148,11 +154,14 @@
                 }
                 if (j > 0) {
                     let username = $("#username").val();
+                    let usedTime = (new Date()).getTime() - lastTimestamp + passwordUsedTime;
                     let request = {
                         "username": username,
                         "domain": "www.sohu.com",
                         "loginMode": "displayHead",
-                        "chosenPageUris": chosenPageUris
+                        "chosenPageUris": chosenPageUris,
+                        "passwordUsedTime": passwordUsedTime,
+                        "usedTime": usedTime
                     };
                     $.ajax({
                         type: "POST",

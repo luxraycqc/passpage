@@ -51,7 +51,9 @@ public class LoginService {
 
     public String[] getMixedPageUris(String username, String domain, String loginMode) {
         try {
-            if (userLoginPasswordStates.get(domain + username) != 1) return new String[]{"2"};
+            if (userLoginPasswordStates.get(domain + username) != 1) {
+                return new String[]{"2"};
+            }
             TreeSet<String> mixedFileNames = new TreeSet<>();
             UserLoginState userLoginState = userLoginStates.get(domain + username);
             if (userLoginState == null) {
@@ -146,7 +148,7 @@ public class LoginService {
         }
     }
 
-    public String login(String username, String domain, String loginMode, String[] chosenPageUris) {
+    public String login(String username, String domain, String loginMode, String[] chosenPageUris, int passwordUsedTime, int usedTime) {
         try {
             log.info("username=" + username + "请求登录，模式为" + loginMode + "，已选页面uri为" + Arrays.asList(chosenPageUris));
             UserLoginState userLoginState = userLoginStates.get(domain + username);
@@ -174,10 +176,13 @@ public class LoginService {
                 }
             }
             if (copiedRealFileNames.size() == 0) userLoginState.addScore(1);
-//            double precision = 0, recall = 0, fMeasure = 0;
-//            precision = (double) chosenImagesCorrectCount / chosenImagesCount;
-//            if (realImagesCount > 0) recall = (double) chosenImagesCorrectCount / realImagesCount;
-//            if (precision + recall > 0) fMeasure = 2 * precision * recall / (precision + recall);
+            Connection connection = dataSource.getConnection();
+            Entity allRealCountEntity = SqlUtil.queryOne(connection, "SELECT count(0) FROM user_page WHERE username=? AND domain=? and deleted=0", username, domain);
+            int allRealCount = allRealCountEntity.getInt("count(0)");
+            double precision = 0, recall = 0, fMeasure = 0;
+//            precision = (double) chosenPageCorrectCount / chosenPageCount;
+//            if (realPageCount > 0) recall = (double) chosenPageCorrectCount / realPageCount;
+            if (precision + recall > 0) fMeasure = 2 * precision * recall / (precision + recall);
             if (userLoginState.getScore() >= 1) {
                 String sessionId = RandomUtil.randomString(20);
                 CommonController.sessionMap.put(domain + username, sessionId);

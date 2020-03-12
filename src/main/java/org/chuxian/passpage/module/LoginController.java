@@ -70,7 +70,9 @@ public class LoginController {
         String domain = loginRequest.getDomain();
         String loginMode = loginRequest.getLoginMode();
         String[] chosenPageUris = loginRequest.getChosenPageUris();
-        return loginService.login(username, domain, loginMode, chosenPageUris);
+        int passwordUsedTime = loginRequest.getPasswordUsedTime();
+        int usedTime = loginRequest.getUsedTime();
+        return loginService.login(username, domain, loginMode, chosenPageUris, passwordUsedTime, usedTime);
     }
 
     @RequestMapping(value="/quit/{domain}/{username}", method = RequestMethod.GET)
