@@ -52,6 +52,10 @@ public class LoginService {
     public String[] getMixedPageUris(String username, String domain, String loginMode) {
         try {
             if (userLoginPasswordStates.get(domain + username) != 1) {
+                Connection connection = dataSource.getConnection();
+                SqlUtil.execute(connection, "insert into login_history(username, domain, login_mode, password_correct_flag, success_flag, login_time) values(?,?,?,?,?,?)",
+                        username, domain, loginMode, 0, 0, new Date());
+                DbUtil.close(connection);
                 return new String[]{"2"};
             }
             TreeSet<String> mixedFileNames = new TreeSet<>();
@@ -152,6 +156,7 @@ public class LoginService {
         try {
             log.info("username=" + username + "请求登录，模式为" + loginMode + "，已选页面uri为" + Arrays.asList(chosenPageUris));
             UserLoginState userLoginState = userLoginStates.get(domain + username);
+            int chosenPageCount = chosenPageUris.length;
             if (chosenPageUris.length == 0) {
                 userLoginState.setScore(0);
                 return "2";
@@ -167,12 +172,18 @@ public class LoginService {
             userLoginState.addAvailableChangeCount(1);
             userLoginState.addLoginCount(1);
             HashSet<String> realFileNames = userLoginState.getRealFileNames();
+            int realPageCount = realFileNames.size();
             log.info("正确的页面uri为" + realFileNames);
             HashSet<String> copiedRealFileNames = new HashSet<>(realFileNames);
+            HashSet<String> correctFileNames = new HashSet<>();
+            int chosenPageCorrectCount = 0;
             for (String chosenPageUri : chosenPageUris) {
                 if (!copiedRealFileNames.remove(chosenPageUri)) {
                     userLoginState.addScore(-1);
                     break;
+                } else {
+                    chosenPageCorrectCount++;
+                    correctFileNames.add(chosenPageUri);
                 }
             }
             if (copiedRealFileNames.size() == 0) userLoginState.addScore(1);
@@ -180,18 +191,25 @@ public class LoginService {
             Entity allRealCountEntity = SqlUtil.queryOne(connection, "SELECT count(0) FROM user_page WHERE username=? AND domain=? and deleted=0", username, domain);
             int allRealCount = allRealCountEntity.getInt("count(0)");
             double precision = 0, recall = 0, fMeasure = 0;
-//            precision = (double) chosenPageCorrectCount / chosenPageCount;
-//            if (realPageCount > 0) recall = (double) chosenPageCorrectCount / realPageCount;
+            precision = (double) chosenPageCorrectCount / chosenPageCount;
+            if (realPageCount > 0) recall = (double) chosenPageCorrectCount / realPageCount;
             if (precision + recall > 0) fMeasure = 2 * precision * recall / (precision + recall);
+            Date date = new Date();
             if (userLoginState.getScore() >= 1) {
                 String sessionId = RandomUtil.randomString(20);
                 CommonController.sessionMap.put(domain + username, sessionId);
                 log.info("domain=" + domain + ";username=" + username + ";sessionId=" + sessionId);
                 userLoginPasswordStates.remove(domain + username);
                 userLoginStates.remove(domain + username);
+                SqlUtil.execute(connection, "insert into login_history(username, domain, login_mode, password_correct_flag, success_flag, all_real_count, real_page_count, chosen_page_count, chosen_page_correct_count, login_time, precision_rate, recall_rate, f_measure, password_used_time, used_time, correct_file_names, missed_file_names) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        username, domain, loginMode, 1, 1, allRealCount, realPageCount, chosenPageCount, chosenPageCorrectCount, date, precision, recall, fMeasure, passwordUsedTime, usedTime, correctFileNames.toString(), copiedRealFileNames.toString());
+                DbUtil.close(connection);
                 return "https://" + domain + "/?PassPageUser=" + username + "-" + sessionId;
             } else {
                 userLoginState.setScore(0);
+                SqlUtil.execute(connection, "insert into login_history(username, domain, login_mode, password_correct_flag, success_flag, all_real_count, real_page_count, chosen_page_count, chosen_page_correct_count, login_time, precision_rate, recall_rate, f_measure, password_used_time, used_time, correct_file_names, missed_file_names) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        username, domain, loginMode, 1, 0, allRealCount, realPageCount, chosenPageCount, chosenPageCorrectCount, date, precision, recall, fMeasure, passwordUsedTime, usedTime, correctFileNames.toString(), copiedRealFileNames.toString());
+                DbUtil.close(connection);
                 return "5";
             }
         } catch (Exception e) {
