@@ -41,7 +41,6 @@ public class DecoyPageService {
     @Scheduled(cron = "0 1 0,12 * * ?")
     public void crawlPages() {
         crawlSohuPages();
-        crawlZhihuPages();
     }
 
     public int crawlSohuPages() {
