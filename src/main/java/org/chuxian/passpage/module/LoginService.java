@@ -167,6 +167,7 @@ public class LoginService {
             if (userLoginState.getLoginCount() >= 3) {
                 userLoginState.setScore(0);
                 log.info("username=" + username + "登录次数超限，已经登录" + userLoginState.loginCount + "次");
+                userLoginState.setQuitFlag(0);
                 return "4";
             }
             userLoginState.addAvailableChangeCount(1);
